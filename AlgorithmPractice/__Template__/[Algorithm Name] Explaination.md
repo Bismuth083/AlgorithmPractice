@@ -18,7 +18,7 @@
 
 ### AOJ 問題ID
 
-- [Problem ID](https://example.com)
+- [Problem ID(問題名)](https://example.com)
 
 ## リファレンス
 
