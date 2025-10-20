@@ -1,6 +1,6 @@
 ﻿namespace Bismuth083.AlgorithmPractice.Test;
 
-public class Sample
+public class TestSampleClass
 {
   [Test]
   public void Test1()
