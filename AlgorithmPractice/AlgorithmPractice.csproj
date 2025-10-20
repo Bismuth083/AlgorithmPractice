@@ -5,6 +5,7 @@
 		<LangVersion>6.0</LangVersion>
 		<ImplicitUsings>disable</ImplicitUsings>
 		<Nullable>disable</Nullable>
+		<NoWarn>IDE0130</NoWarn>
 	</PropertyGroup>
 
 </Project>

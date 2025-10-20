@@ -1,10 +1,11 @@
-﻿using System;
-
-public static class SampleClass
+﻿namespace Bismuth083.AlgorithmPractice
 {
-  public static bool SampleMethod()
+  public static class SampleClass
   {
-    return true;
+    public static bool SampleMethod()
+    {
+      return true;
+    }
   }
 }
 
