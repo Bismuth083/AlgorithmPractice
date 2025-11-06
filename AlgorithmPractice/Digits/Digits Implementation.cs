@@ -3,8 +3,17 @@ using static System.Math;
 
 namespace Bismuth083.AlgorithmPractice
 {
+  /// <summary>
+  /// 桁数を計算するための静的クラス
+  /// </summary>
   public static class Digits
   {
+    /// <summary>
+    /// 桁数を計算する関数
+    /// </summary>
+    /// <param name="number">桁数を調べたい数値</param>
+    /// <returns>桁数(1から20までの整数)</returns>
+    /// <remarks>0の桁数は1として扱われる。</remarks>
     public static int CalcDigits(ulong number)
     {
       if(number >= Dig11)
@@ -143,6 +152,12 @@ namespace Bismuth083.AlgorithmPractice
       }
     }
 
+    /// <summary>
+    /// 桁数を計算する関数
+    /// </summary>
+    /// <param name="number">桁数を調べたい数値。</param>
+    /// <returns></returns>
+    /// <remarks>0の桁数は1として扱われる。負数が与えられたら絶対値の桁数を計算する。</remarks>
     public static int CalcDigits(long number) {
       return CalcDigits((ulong)Abs(number));
     }
