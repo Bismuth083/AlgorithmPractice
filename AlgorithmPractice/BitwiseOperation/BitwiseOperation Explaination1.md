@@ -106,7 +106,7 @@ Debuffs currentDebuffs = Debuffs.poisoned | Debuffs.fevered; // 0b_0000_0101
 | `num`に`mask`部分のフラグを全て**立てる** |   `num \| mask`   |
 | `num`から`mask`部分のフラグを**全て消す** |   `num & ~mask`   |
 |       `num`のフラグを**全て立てる**       |   `num \| ~num`   |
-|       `num`からフラグを**全て消す**       |    `num ^ num`    |
+|       `num`からフラグを**全て消す**       |   `num & ~num`    |
 
 #### その他
 
