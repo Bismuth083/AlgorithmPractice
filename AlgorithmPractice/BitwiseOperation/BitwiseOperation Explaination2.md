@@ -7,6 +7,11 @@
 
 ## 解説
 
+> 以下で説明されているアルゴリズムのいくつかは、言語側でメソッド・関数が用意されており、
+> かつCPUによるハードウェア・アクセラレーションが利用可能である。
+> したがって、そのようなものをわざわざ自力で実装する必要はない。
+> それどころか、自力実装によって性能が劣化するおそれがある。
+
 ### 16進数における特徴的な数
 
 | 16進数 |    2進数     |
@@ -94,9 +99,42 @@ static ulong RoundUpToPowerOf2(ulong num) => {
 
 `System.Numerics.BitOperations.cs`にて定義済み(`Log2(num)`)
 
-(執筆予定……)
+一番左のビットだけを残して、2のべき乗の状態にする。この状態から、De Bruijn列を使って`1 << i`の状態から`i`に変換する。
 
-参考: [de Bruijn列でBSR32をO(1)で実装できる理由](https://zenn.dev/koron/articles/ea7e340bae9c34)
+ここで使用するのが**`0x076be629 (0b0000_0111_0110_1011_1110_0110_0010_1001)`**である。
+
+$ 0 < i < 31 $に対して`((1 << i * 0x076be629 ) >> 27`して5ビットを取り出すと、  
+全単射な$ j $(ただし$ 0 < j < 31 $)が得られる。
+
+$ i $に対する$ j $のふるまいについては、[DeBruijn.md](DeBruijn.md)にまとめた。
+
+後は、この$ j $に対応するハッシュテーブルさえ作成してしまえば、$ O(1) $で変換することができる。
+
+```csharp
+static uint Log2(uint num) {
+  const uint DeBruijn = 0x076be629;
+
+  // De Bruijnテーブル: インデックス(0-31) -> 対応するLog2の値
+  static readonly byte[] Table = {
+    0, 1, 3, 7, 14, 29, 27, 22,
+    13, 26, 21, 11, 23, 15, 31, 30,
+    28, 25, 19, 6, 12, 24, 17, 2,
+    5, 10, 20, 9, 18, 4, 8, 16
+  };
+
+  // numを2のべき乗に揃える（最上位ビットのみを残す）
+  num |= num >> 1;
+  num |= num >> 2;
+  num |= num >> 4;
+  num |= num >> 8;
+  num |= num >> 16;
+
+  // De Bruijn列を使ってビット位置を計算
+  uint index = (num * DeBruijn) >> 27;
+
+  return Table[index];
+}
+```
 
 ### 立っているビット数のカウント(popcount)
 
@@ -109,7 +147,7 @@ static ulong RoundUpToPowerOf2(ulong num) => {
 | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: |
 | 1個 | 0個 | 0個 | 1個 | 1個 | 1個 | 0個 | 1個 |
 
- ▼
+▼
 
 | `1 + 0` | `0 + 1` | `1 + 1` | `0 + 1` |
 | :-----: | :-----: | :-----: | :-----: |
@@ -208,7 +246,7 @@ static ulong BSR(ulong num) => {
 
 `System.Numerics.BitOperations.cs`にて定義済み(`LeadingZeroCount(num)`)
 
-(執筆予定……)
+最上位ビットの取得方法が分かっているので、後はDe Bruijn列を使って算出すれば完了。
 
 ### 最下位ビットの取得
 
@@ -229,7 +267,7 @@ static ulong BSF(ulong num) => num & ((~num) + 1);
 
 `System.Numerics.BitOperations.cs`にて定義済み(`TrailingZeroCount(num)`)
 
-(執筆予定……)
+最下位ビットの取得方法が分かっているので、後はDe Bruijn列を使って算出すれば完了。
 
 ### 部分集合を走査(bit全探索)
 
@@ -249,3 +287,4 @@ static ulong BSF(ulong num) => num & ((~num) + 1);
 - [ビット演算の様々な使い方](https://qiita.com/P-SiZK/items/33e3ccded9e99da5c822)
 - [BitOperations.cs](https://github.com/dotnet/dotnet/blob/b0f34d51fccc69fd334253924abd8d6853fad7aa/src/runtime/src/libraries/System.Private.CoreLib/src/System/Numerics/BitOperations.cs)
 - [BitOperations クラス](https://learn.microsoft.com/ja-jp/dotnet/api/system.numerics.bitoperations?view=net-10.0)
+- [de Bruijn列でBSR32をO(1)で実装できる理由](https://zenn.dev/koron/articles/ea7e340bae9c34)
